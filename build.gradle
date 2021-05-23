@@ -21,12 +21,13 @@ repositories {
 
 dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
-    implementation name: 'BossShopPro'
+    compileOnly name: 'BossShopPro'
 }
 
 group = 'BSP-PlayerShops'
-version = '1.2.5'
+version = '1.2.6'
 description = 'PlayerShops'
+
 java.sourceCompatibility = JavaVersion.VERSION_1_8
 
 publishing {

@@ -20,12 +20,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class PlayerShopItem {
 
-
-    private ItemStack item; //item
-    private int amount; //amount
-    private double price_per_unit; //price
+    private ItemStack item; // item
+    private int amount; // amount
+    private double price_per_unit; // price
     private int[] levels;
-
 
     public PlayerShopItem(ItemStack item, int amount, double price_per_unit) {
         this.item = item;
@@ -34,7 +32,6 @@ public class PlayerShopItem {
         this.price_per_unit = price_per_unit;
         loadLevels();
     }
-
 
     public PlayerShopItem(ConfigurationSection section) {
         this.item = section.getItemStack("a");
@@ -48,19 +45,19 @@ public class PlayerShopItem {
         levels = null;
         switch (item.getMaxStackSize()) {
             case 1:
-                levels = new int[]{1};
+                levels = new int[] { 1 };
                 break;
             case 8:
-                levels = new int[]{1, 8};
+                levels = new int[] { 1, 8 };
                 break;
             case 16:
-                levels = new int[]{1, 4, 16};
+                levels = new int[] { 1, 4, 16 };
                 break;
             case 32:
-                levels = new int[]{1, 8, 32};
+                levels = new int[] { 1, 8, 32 };
                 break;
             case 64:
-                levels = new int[]{1, 8, 64};
+                levels = new int[] { 1, 8, 64 };
                 break;
         }
     }
@@ -70,7 +67,6 @@ public class PlayerShopItem {
         section.set("b", amount);
         section.set("c", price_per_unit);
     }
-
 
     public ItemStack create(int amount) {
         ItemStack item = this.item.clone();
@@ -115,25 +111,35 @@ public class PlayerShopItem {
     }
 
     public BSBuy createShopItemNormal(PlayerShops plugin, String name, BSShop shop) {
-        //Actions
+        // Actions
         Map<ClickType, ActionSet> actions = null;
         if (levels.length >= 2) {
             actions = new HashMap<ClickType, ActionSet>();
-            actions.put(ClickType.RIGHT, new ActionSet(plugin.getBossShopListener().getRewardTypeShopItem(), plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(levels[1]), levels[1] * price_per_unit, plugin.getMessages().get("ItemPreview.MessageRight"), null, null, null));
+            actions.put(ClickType.RIGHT,
+                    new ActionSet(plugin.getBossShopListener().getRewardTypeShopItem(),
+                            plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(levels[1]),
+                            levels[1] * price_per_unit, plugin.getMessages().get("ItemPreview.MessageRight"), null,
+                            null, null));
         }
         if (levels.length >= 3) {
-            actions.put(ClickType.MIDDLE, new ActionSet(plugin.getBossShopListener().getRewardTypeShopItem(), plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(levels[2]), levels[2] * price_per_unit, plugin.getMessages().get("ItemPreview.MessageMiddle"), null, null, null));
+            actions.put(ClickType.MIDDLE,
+                    new ActionSet(plugin.getBossShopListener().getRewardTypeShopItem(),
+                            plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(levels[2]),
+                            levels[2] * price_per_unit, plugin.getMessages().get("ItemPreview.MessageMiddle"), null,
+                            null, null));
         }
 
-        //Conditions
-        BSCondition condition = new BSSingleCondition(plugin.getBossShopListener().getPlayerShopItemCondition(), "instock", "true");
+        // Conditions
+        BSCondition condition = new BSSingleCondition(plugin.getBossShopListener().getPlayerShopItemCondition(),
+                "instock", "true");
 
-        //Set up shopitem
-        BSBuy buy = new BSBuyAdvanced(plugin.getBossShopListener().getRewardTypeShopItem(), plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(1), price_per_unit, plugin.getMessages().get("ItemPreview.MessageLeft"), -1, null, name, condition, null, null, actions);
+        // Set up shopitem
+        BSBuy buy = new BSBuyAdvanced(plugin.getBossShopListener().getRewardTypeShopItem(),
+                plugin.getBossShopListener().getPriceTypePlayerShopsCurrency(), create(1), price_per_unit,
+                plugin.getMessages().get("ItemPreview.MessageLeft"), -1, null, name, condition, null, null, actions);
 
         ItemStack item = this.item.clone();
         ItemMeta meta = item.getItemMeta();
-
 
         boolean has_lore = meta.hasLore();
         if (!has_lore) {
@@ -141,7 +147,7 @@ public class PlayerShopItem {
         }
 
         List<String> list = meta.getLore();
-        if (list == null) { //Separate new info lore and item lore
+        if (list == null) { // Separate new info lore and item lore
             list = new ArrayList<String>();
         }
         list.add(0, " ");
@@ -171,23 +177,15 @@ public class PlayerShopItem {
         return buy;
     }
 
-
     public BSBuy createShopItemEdit(PlayerShops plugin, String name, BSShop shop) {
-        BSBuy buy = new BSBuy(plugin.getBossShopListener().getRewardTypeShopItemEdit(), BSPriceType.Nothing, create(1), null, null, -1, null, name, null, null, null);
+        BSBuy buy = new BSBuy(plugin.getBossShopListener().getRewardTypeShopItemEdit(), BSPriceType.Nothing, create(1),
+                null, null, -1, null, name, null, null, null);
 
         ItemStack item = this.item.clone();
         ItemMeta meta = item.getItemMeta();
-
-        boolean has_lore = meta.hasLore();
-        if (!has_lore) {
-            meta.setLore(new ArrayList<String>());
-        }
-
-        List<String> list = meta.getLore();
-        if (has_lore) { //Separate new info lore and item lore
-            list.add(0, " ");
-            list.add(0, " ");
-        }
+        // List<String> list = meta.getLore();
+        List<String> list = new ArrayList<String>(); // shrug
+        System.out.println(list);
 
         list.add(0, plugin.getMessages().get("ItemEditPreview.Rest"));
         list.add(0, " ");

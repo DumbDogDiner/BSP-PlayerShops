@@ -45,7 +45,10 @@ public class ShopCreator {
 
         int i = 0;
         for (PlayerShopItem item : s.getItems()) {
-            BSBuy shopitem = item.createShopItemEdit(s.getPlugin(), String.valueOf(i), shopedit);
+            BSBuy shopitem = item.createShopItemEdit(
+                    s.getPlugin(), 
+                    String.valueOf(i), 
+                shopedit);
             shopedit.addShopItem(shopitem, shopitem.getItem(), ClassManager.manager);
             i++;
         }
