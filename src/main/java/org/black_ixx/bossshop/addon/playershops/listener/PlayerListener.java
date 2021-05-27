@@ -1,6 +1,5 @@
 package org.black_ixx.bossshop.addon.playershops.listener;
 
-
 import java.io.File;
 
 import org.black_ixx.bossshop.addon.playershops.PlayerShops;
@@ -9,6 +8,7 @@ import org.black_ixx.bossshop.addon.playershops.objects.PlayerShop;
 import org.black_ixx.bossshop.addon.playershops.objects.PlayerShopsUserInputPrice;
 import org.black_ixx.bossshop.core.BSBuy;
 import org.black_ixx.bossshop.core.BSShopHolder;
+import org.black_ixx.bossshop.events.BSPlayerPurchaseEvent;
 import org.black_ixx.bossshop.managers.ClassManager;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-
 public class PlayerListener implements Listener {
 
     private PlayerShops plugin;
@@ -33,7 +32,6 @@ public class PlayerListener implements Listener {
     public PlayerListener(PlayerShops plugin) {
         this.plugin = plugin;
     }
-
 
     @EventHandler
     public void joinServer(PlayerJoinEvent event) {
@@ -50,17 +48,15 @@ public class PlayerListener implements Listener {
         leave(event.getPlayer());
     }
 
-
     public void join(Player p) {
         if (plugin.getShopsManager() != null) {
-            if (plugin.getSettings().getListOnlinePlayersOnly() && plugin.getShopsManager().getPlayerShop(p.getUniqueId()) == null) {
-                File file = new File(plugin.getBossShop().getDataFolder() + File.separator + "addons" +
-                        File.separator + plugin.getAddonName() + File.separator + "shops" + File.separator +
-                        p.getUniqueId().toString().charAt(0) + File.separator + p.getUniqueId().toString() +
-                        ".yml");
+            if (plugin.getSettings().getListOnlinePlayersOnly()
+                    && plugin.getShopsManager().getPlayerShop(p.getUniqueId()) == null) {
+                File file = new File(plugin.getBossShop().getDataFolder() + File.separator + "addons" + File.separator
+                        + plugin.getAddonName() + File.separator + "shops" + File.separator
+                        + p.getUniqueId().toString().charAt(0) + File.separator + p.getUniqueId().toString() + ".yml");
                 if (file.exists()) {
-                    plugin.getSaveManager().loadShop(p.getUniqueId(), p, REASON_LOAD.OWNER_JOIN, false,
-                            true);
+                    plugin.getSaveManager().loadShop(p.getUniqueId(), p, REASON_LOAD.OWNER_JOIN, false, true);
                 }
             }
 
@@ -83,6 +79,17 @@ public class PlayerListener implements Listener {
         }
     }
 
+    @EventHandler
+    public void playerPreventSelfBuy(BSPlayerPurchaseEvent event) {
+        Player p = event.getPlayer();
+        if (event.getShop().getShopName()
+                .equalsIgnoreCase(plugin.getShopsManager().getPlayerShop(p.getUniqueId()).getShopName())
+                && event.getShop().getItems().contains(event.getShopItem())) { // ???
+            event.setCancelled(true);
+            plugin.getMessages().sendMessage("Message.NoSelfBuy", p, null, p,
+                    plugin.getIconManager().getIconSelectionShop(), null, null);
+        }
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void inventoryClick(InventoryClickEvent event) {
@@ -110,25 +117,34 @@ public class PlayerListener implements Listener {
 
                     PlayerShop shop = plugin.getShopsManager().getPlayerShop(p.getUniqueId());
                     if (shop != null) {
-                        if (shop.isBeingEdited() && shop.getShopEdit() == holder.getShop()) { //Player is in edit mode and clicked item of own inventory
+                        if (shop.isBeingEdited() && shop.getShopEdit() == holder.getShop()) { // Player is in edit mode
+                                                                                              // and clicked item of own
+                                                                                              // inventory
                             event.setCancelled(true);
                             event.setResult(Result.DENY);
                             shopEditItemClick(p, shop, event.getCurrentItem(), event.getInventory(), event.getSlot(),
                                     ((BSShopHolder) event.getInventory().getHolder()));
                             return;
 
-                        } else if (shop.isBeingEdited() && plugin.getIconManager().getIconSelectionShop() == holder.getShop()) { //Player is in edit mode and item selection menu and clicked item of own inventory
+                        } else if (shop.isBeingEdited()
+                                && plugin.getIconManager().getIconSelectionShop() == holder.getShop()) { // Player is in
+                                                                                                         // edit mode
+                                                                                                         // and item
+                                                                                                         // selection
+                                                                                                         // menu and
+                                                                                                         // clicked item
+                                                                                                         // of own
+                                                                                                         // inventory
                             event.setCancelled(true);
                             event.setResult(Result.DENY);
-
 
                             if (plugin.getIconManager().getAllowInventoryItem(p, shop)) {
                                 shopIconSelectionItemClick(p, shop, event.getCurrentItem(), holder);
                                 return;
 
                             } else {
-                                ClassManager.manager.getMessageHandler().sendMessage("Main.NoPermission", p,
-                                        null, p, plugin.getIconManager().getIconSelectionShop(), holder, null);
+                                ClassManager.manager.getMessageHandler().sendMessage("Main.NoPermission", p, null, p,
+                                        plugin.getIconManager().getIconSelectionShop(), holder, null);
                                 return;
                             }
                         }
@@ -138,17 +154,16 @@ public class PlayerListener implements Listener {
         }
     }
 
-
-    public void shopEditItemClick(Player p, PlayerShop shop, ItemStack item, Inventory i, int slot, BSShopHolder holder) {
+    public void shopEditItemClick(Player p, PlayerShop shop, ItemStack item, Inventory i, int slot,
+            BSShopHolder holder) {
         if (p.getGameMode() == GameMode.CREATIVE && plugin.getSettings().getPreventCreativeAccess()) {
-            plugin.getMessages().sendMessage("Message.PreventedCreativeAddItem", p, null, p,
-                    shop.getShopEdit(), holder, null);
+            plugin.getMessages().sendMessage("Message.PreventedCreativeAddItem", p, null, p, shop.getShopEdit(), holder,
+                    null);
             return;
         }
 
         if (plugin.getBlacklist().isBlocked(item)) {
-            plugin.getMessages().sendMessage("Message.InvalidItem", p, null, p, shop.getShopEdit(),
-                    holder, null);
+            plugin.getMessages().sendMessage("Message.InvalidItem", p, null, p, shop.getShopEdit(), holder, null);
             return;
         }
 
@@ -159,13 +174,13 @@ public class PlayerListener implements Listener {
         } else {
 
             if (!shop.isEmptySlotLeft(p)) {
-                plugin.getMessages().sendMessage("Message.OutOfSlots", p, null, p, shop.getShopEdit(),
-                        holder, null);
+                plugin.getMessages().sendMessage("Message.OutOfSlots", p, null, p, shop.getShopEdit(), holder, null);
                 return;
             }
 
-            new PlayerShopsUserInputPrice(shop, p, item, slot).getUserInput(p, plugin.getMessages().get("Message.EnterPrice"),
-                    item, plugin.getMessages().get("Message.EnterPrice"));
+            new PlayerShopsUserInputPrice(shop, p, item, slot).getUserInput(p,
+                    plugin.getMessages().get("Message.EnterPrice"), item,
+                    plugin.getMessages().get("Message.EnterPrice"));
         }
 
     }
@@ -174,7 +189,6 @@ public class PlayerListener implements Listener {
         shop.setIcon(item.clone(), true, true, true);
         plugin.getMessages().sendMessage("Message.IconSelected", p, null, p, holder.getShop(), holder, null);
     }
-
 
     @EventHandler(priority = EventPriority.HIGH)
     public void inventoryClose(InventoryCloseEvent event) {
@@ -194,6 +208,5 @@ public class PlayerListener implements Listener {
             }
         }
     }
-
 
 }
