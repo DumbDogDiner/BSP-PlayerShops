@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'maven-publish'
+    id 'kr.entree.spigradle' version '2.2.3'
 }
 
 repositories {
@@ -40,4 +41,64 @@ publishing {
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
+}
+
+tasks {
+    spigot {
+        name = 'PlayerShops'
+        version = project.version
+        apiVersion = '1.16'
+        description = 'BossShopPro Addon - Allow your players to create public GUI shops'
+        authors = ['Black_ixx']
+        website = 'http://felix.neuby.de'
+        depends = ['BossShopPro']
+        commands {
+            playershops {
+                description = 'Opens PlayerShops list'
+                aliases = ['playershop', 'ps']
+            }
+            playershopsadmin {
+                description = 'PlayerShops admin commands'
+                aliases = ['playershopadmin', 'psadmin']
+            }
+        }
+        permissions {
+            'PlayerShops.open' {
+                description = 'Allows opening the playershops listing GUI'
+                defaults = 'op'
+            }
+            'PlayerShops.create' {
+                description = 'Allows creating an own PlayerShop'
+                defaults = 'op'
+            }
+            'PlayerShops.rent' {
+                description = 'Allows renting a better shop listing spot'
+                defaults = 'op'
+            }
+            'PlayerShops.buySlot' {
+                description = 'Allows purchasing additional shop slots'
+                defaults = 'op'
+            }
+            'PlayerShops.selectIcon' {
+                description = 'Allows selecting a shop icon'
+                defaults = 'op'
+            }
+            'PlayerShops.createSign' {
+                description = 'Allows creating a PlayerShops sign which links to the own shop'
+                defaults = 'op'
+            }
+            'PlayerShops.createSign.other' {
+                description = 'Allows creating PlayerShops signs which link to any player'
+                defaults = 'op'
+            }
+            'PlayerShops.rename' {
+                description = 'Allows players to rename their own shop'
+                defaults = 'op'
+            }
+            'PlayerShops.admin' {
+                description = 'Allows players to use PlayerShops admin commands'
+                defaults = 'op'
+            }
+        }
+    }
 }

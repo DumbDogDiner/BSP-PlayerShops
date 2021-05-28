@@ -1,5 +1,6 @@
 package org.black_ixx.bossshop.addon.playershops;
 
+import kr.entree.spigradle.annotations.PluginMain;
 import org.black_ixx.bossshop.addon.playershops.listener.BSListener;
 import org.black_ixx.bossshop.addon.playershops.listener.PlayerListener;
 import org.black_ixx.bossshop.addon.playershops.listener.SignListener;
@@ -20,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 
+@PluginMain
 public class PlayerShops extends BossShopAddonConfigurable {
 
 
