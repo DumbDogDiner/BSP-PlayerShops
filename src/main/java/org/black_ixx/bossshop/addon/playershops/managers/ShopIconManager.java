@@ -103,7 +103,10 @@ public class ShopIconManager {
         ItemMeta meta = i.getItemMeta();
 
 
-        String title = meta.getDisplayName();
+        String title = null;
+        if (meta.hasDisplayName()) {
+            title = meta.getDisplayName();
+        }
         if (title == null || use_default_text) {
             title = inventoryitem ? plugin.getMessages().get("ShopIcon.InventoryItemTitle") : plugin.getMessages().get("ShopIcon.DefaultTitle");
         }
