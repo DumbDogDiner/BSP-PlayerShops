@@ -82,8 +82,12 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void playerPreventSelfBuy(BSPlayerPurchaseEvent event) {
         Player p = event.getPlayer();
+        PlayerShop pShop = plugin.getShopsManager().getPlayerShop(p.getUniqueId());
+        if (pShop == null) {
+            return;
+        }
         if (event.getShop().getShopName()
-                .equalsIgnoreCase(plugin.getShopsManager().getPlayerShop(p.getUniqueId()).getShopName())
+                .equalsIgnoreCase(pShop.getShopName())
                 && event.getShop().getItems().contains(event.getShopItem())) { // ???
             event.setCancelled(true);
             plugin.getMessages().sendMessage("Message.NoSelfBuy", p, null, p,
